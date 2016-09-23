@@ -21,7 +21,6 @@ public class JWTTokenGenerator implements TokenGenerator {
     @Override
     public AuthenticationToken generate() {
         Date date = RESTSecurityDateTimeUtil.addHoursToDate(6);
-        System.out.println(date);
         Map<String, Object> claims = new HashMap<String, Object>();
         claims.put(CommonConstant.ISS, jwtTokenConfig.getIss());
         claims.put(CommonConstant.SUB, jwtTokenConfig.getSub());

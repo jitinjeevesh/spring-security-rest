@@ -1,6 +1,10 @@
 package com.oauth.handler;
 
+import com.oauth.constants.SecurityConstants;
 import com.oauth.service.RESTSecurityUserDetails;
+import com.oauth.utils.MatchUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -19,6 +23,8 @@ import java.util.List;
 @Component
 public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    private final static Logger log = LoggerFactory.getLogger(RESTAuthenticationSuccessHandler.class);
+
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     public RESTAuthenticationSuccessHandler() {
@@ -27,33 +33,24 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-        System.out.println(".............Inside RESTAuthenticationSuccessHandler................");
+        log.info("Inside REST Authentication SuccessHandler.");
         response.setStatus(HttpServletResponse.SC_OK);
-        if ("application/json".equals(request.getHeader("Content-Type"))) {
-            System.out.println("........>Inside if.........");
-//              USED if you want to AVOID redirect to LoginSuccessful.htm in JSON authentication
+        if (MatchUtil.checkContentType(request.getHeader(SecurityConstants.CONTENT_TYPE))) {
             RESTSecurityUserDetails principal = (RESTSecurityUserDetails) authentication.getPrincipal();
             response.getWriter().print("{\"responseCode\":\"SUCCESS\",\"accessToken\":" + principal.getAccessToken() + "}");
             response.getWriter().flush();
         } else {
-            System.out.println("......................Inside else..........");
             super.onAuthenticationSuccess(request, response, authentication);
         }
     }
 
     @Override
-    protected void handle(HttpServletRequest request,
-                          HttpServletResponse response, Authentication authentication) throws IOException {
+    protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         String targetUrl = determineTargetUrl(authentication);
-
-        System.out.println(".................Inside target url..........");
-        System.out.println(targetUrl);
         if (response.isCommitted()) {
-            System.out.println("Can't redirect");
+            log.info("Can't redirect");
             return;
         }
-
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 

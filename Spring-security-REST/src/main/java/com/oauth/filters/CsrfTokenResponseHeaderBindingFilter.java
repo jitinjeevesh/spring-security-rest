@@ -1,5 +1,7 @@
 package com.oauth.filters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -10,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class CsrfTokenResponseHeaderBindingFilter extends OncePerRequestFilter {
+
+    private final static Logger log = LoggerFactory.getLogger(CsrfTokenResponseHeaderBindingFilter.class);
+
     protected static final String REQUEST_ATTRIBUTE_NAME = "_csrf";
     protected static final String RESPONSE_HEADER_NAME = "X-CSRF-HEADER";
     protected static final String RESPONSE_PARAM_NAME = "X-CSRF-PARAM";
@@ -17,10 +22,8 @@ public class CsrfTokenResponseHeaderBindingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println(".........>Inside CsrfTokenResponseHeaderBindingFilter....................");
-
+        log.info("Inside Csrf Token Response Header Binding Filter");
         CsrfToken token = (CsrfToken) request.getAttribute(REQUEST_ATTRIBUTE_NAME);
-
         if (token != null) {
             System.out.println(token.getToken());
             response.setHeader(RESPONSE_HEADER_NAME, token.getHeaderName());

@@ -175,7 +175,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     if (user != null) {
       logger.info("Entered createSession() inside for session****************************" + userProfile);
       session = new UserSession();
-      session.setUserId(user);;
+      session.setUsername(user);;
       Calendar cal = Calendar.getInstance(); // creates calendar
       cal.setTime(new Date()); // sets calendar time/date
       cal.add(Calendar.HOUR_OF_DAY, expirationTime); // adds six hour
@@ -214,7 +214,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     //validate secret token
     UserSession session = userProfileDAO.validateToken(request.getHeader(CommonConstant.SECRET_TOKEN));
     if (session != null) {
-    	UserProfile user = userProfileDAO.fetchUserByUserId(session.getUserId().getId());
+    	UserProfile user = userProfileDAO.fetchUserByUserId(session.getUsername().getId());
       if(user!=null){
     	  logger.info("Exiting createSession() of UserProfileServiceImpl ");
         return user;

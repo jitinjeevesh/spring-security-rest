@@ -78,4 +78,14 @@ public class User implements Serializable {
         this.userRole = userRole;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userMail='" + userMail + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", userRole=" + userRole +
+                '}';
+    }
 }

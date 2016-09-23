@@ -90,7 +90,7 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
         if (userSessionList != null && !userSessionList.isEmpty()) {
             UserSession userSession = userSessionList.get(0);
             logger.info("UserSesion Exiting ");
-            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getUserMail());
         }
         return null;
     }

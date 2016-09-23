@@ -117,7 +117,7 @@ public class UserProfileDAOImpl implements UserProfileDAO {
         logger.info("Entering in UserProfileDAOImpl updateUserSession method");
 
         Criteria criteria = getCurrentSession().createCriteria(UserSession.class);
-        criteria.add(Restrictions.eq("userId.id", session.getUserId()));
+        criteria.add(Restrictions.eq("userId.id", session.getUsername()));
         ArrayList<UserSession> userSessionList = (ArrayList<UserSession>) criteria.list();
         if (userSessionList != null && !userSessionList.isEmpty()) {
             UserSession tempSession = userSessionList.get(0);
@@ -126,12 +126,12 @@ public class UserProfileDAOImpl implements UserProfileDAO {
             getCurrentSession().merge(session);
             logger.info("Exiting in UserProfileDAOImpl updateUserSession method  updated session object is " + session);
             UserSession userSession = (UserSession) getCurrentSession().get(UserSession.class, id);
-            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getUserMail());
         } else {
             Integer id = (Integer) getCurrentSession().save(session);
             logger.info("Exiting in UserProfileDAOImpl updateUserSession method saved session object is" + session);
             UserSession userSession = (UserSession) getCurrentSession().get(UserSession.class, id);
-            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getUserMail());
         }
 
 
@@ -174,7 +174,7 @@ public class UserProfileDAOImpl implements UserProfileDAO {
         if (sessionList != null && !sessionList.isEmpty()) {
             logger.info("Exiting in UserProfileDAOImpl validateToken method got session object" + sessionList.get(0));
             UserSession userSession = sessionList.get(0);
-            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getUserMail());
         }
         logger.info("Exiting in UserProfileDAOImpl validateToken method");
         throw new RequiredFieldMissingException(CommonConstant.SECRET_TOKEN_INVALID, ErrorCodes.CODE_INVALID_FIELD);

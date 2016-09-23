@@ -1,5 +1,7 @@
 package com.oauth.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -13,19 +15,11 @@ import java.util.Arrays;
 @Component
 public class RESTAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+    private final static Logger log = LoggerFactory.getLogger(RESTAuthenticationEntryPoint.class);
 
-        System.out.println(".....................RESTAuthenticationEntryPoint...........................");
-        try {
-            System.out.println(request.getAuthType());
-            System.out.println(request.getParts());
-            System.out.println(Arrays.toString(request.getCookies()));
-            System.out.println(request.getQueryString());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,authException.getMessage());
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        log.info("Inside REST authentication entry point.");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
     }
 }

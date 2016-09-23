@@ -8,7 +8,7 @@ public class AuthenticationToken implements Serializable {
     private Integer token_id;
     private String token;
     private Date expiryDateTime;
-    private Integer userId;
+    private String username;
 
     public AuthenticationToken() {
     }
@@ -22,11 +22,11 @@ public class AuthenticationToken implements Serializable {
         this.token = token;
     }
 
-    public AuthenticationToken(Integer token_id, String token, Date expiryDateTime, Integer userId) {
+    public AuthenticationToken(Integer token_id, String token, Date expiryDateTime, String username) {
         this.token_id = token_id;
         this.token = token;
         this.expiryDateTime = expiryDateTime;
-        this.userId = userId;
+        this.username = username;
     }
 
     public Integer getToken_id() {
@@ -53,19 +53,19 @@ public class AuthenticationToken implements Serializable {
         this.expiryDateTime = expiryDateTime;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
     public String toString() {
         return "AuthenticationToken{" +
                 "token='" + token + '\'' +
-                ", userId=" + userId +
+                ", username=" + username +
                 '}';
     }
 }

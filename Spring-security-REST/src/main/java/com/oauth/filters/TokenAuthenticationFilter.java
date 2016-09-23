@@ -1,7 +1,11 @@
 package com.oauth.filters;
 
 import com.oauth.dao.AuthenticationTokenDAO;
+import com.oauth.dao.UserDetailDAO;
 import com.oauth.data.AuthenticationToken;
+import com.oauth.data.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -11,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.util.NestedServletException;
 
@@ -27,8 +30,12 @@ import java.util.Arrays;
 
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    private final static Logger log = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
+
     @Autowired
     private AuthenticationTokenDAO authenticationTokenDAO;
+    @Autowired
+    private UserDetailDAO userDetailDAO;
 
     public final String SECURITY_TOKEN_KEY = "X-Auth-Token";
     private String token = null;
@@ -44,8 +51,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         HttpServletResponse response = (HttpServletResponse) res;
         this.token = request.getHeader(SECURITY_TOKEN_KEY);
 
-        System.out.println("....................Inside token validator.............................................");
-        System.out.println(token);
+        log.info("Token successfully received inside token validator", token);
 //        if(request.getParameter(actionParameter) !=null &&
 //                request.getParameter(actionParameter).equals("logout")) {
 //            SecurityContextHolder.clearContext();
@@ -54,7 +60,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         if (token != null) {
             Authentication authResult;
             try {
-                System.out.println(".............Attempt authentication...................");
                 authResult = attemptAuthentication(request, response);
                 if (authResult == null) {
                     notAuthenticated(request, response, new LockedException("User Not found"));
@@ -82,21 +87,13 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      * Attempt to authenticate request
      */
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException,
-            IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String token = request.getHeader(SECURITY_TOKEN_KEY);
-        logger.info("token found:" + token);
-        System.out.println("....................Token found.........................");
-        System.out.println(token);
-
-        //TODO:Change this to custom exception.
+        log.info("Attempt authentication for token :", token);
         if (token == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
         }
-
         AbstractAuthenticationToken userAuthenticationToken = authUserByToken(token);
-        System.out.println("...................user auth token.............");
-        System.out.println(userAuthenticationToken);
         if (userAuthenticationToken == null)
             throw new AuthenticationServiceException("Invalid Token");
         return userAuthenticationToken;
@@ -118,7 +115,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      */
     private AbstractAuthenticationToken authUserByToken(String token) {
         if (token == null) return null;
-
         //  String username = getUserNameFromToken(); //logic to extract username from token
         //String role = getRolesFromToken(); //extract role information from token
 
@@ -128,12 +124,9 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         if (authenticationToken == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
         }
-        User principal = new User("jpandey@dminc.com", "password", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-        System.out.println("..........................user................................");
-        System.out.println(principal);
-        System.out.println(token);
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken("jpandey@dminc.com", "password", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-        System.out.println(usernamePasswordAuthenticationToken);
+        User user = userDetailDAO.fetchUser(authenticationToken.getUsername());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUserMail(), user.getPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        log.info("Authentication successfully for token :", token);
         return usernamePasswordAuthenticationToken;
     }
 }

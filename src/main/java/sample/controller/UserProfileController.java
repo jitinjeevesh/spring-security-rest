@@ -1,6 +1,6 @@
 package sample.controller;
 
-import com.oauth.constants.AppConstants;
+import com.oauth.constants.SecurityConstants;
 import com.oauth.exception.ErrorCodes;
 import com.oauth.exception.RequiredFieldMissingException;
 import com.oauth.json.AccessToken;
@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api")
 public class UserProfileController {
+
+	public static final String REQUIRED_FIELD_MISSING = "Please provide all required fields";
 
 	/** Logger */
 	private final static Logger logger = LoggerFactory.getLogger(UserProfileController.class);
@@ -54,7 +56,7 @@ public class UserProfileController {
 		logger.info("Entering in UserProfileController login method");
 
 		if(users.getUserMail()==null || users.getUserMail().trim().equals("") || users.getPassword()==null || users.getPassword().trim().equals("") || deviceId.trim().equals("")){
-			throw new RequiredFieldMissingException(AppConstants.REQUIRED_FIELD_MISSING, ErrorCodes.MISSING_ARGUMENT);
+			throw new RequiredFieldMissingException(REQUIRED_FIELD_MISSING, ErrorCodes.MISSING_ARGUMENT);
 		}
 		logger.info("Exiting in UserProfileController login method");
 
