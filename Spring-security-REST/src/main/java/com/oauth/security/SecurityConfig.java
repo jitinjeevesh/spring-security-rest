@@ -108,7 +108,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
         // CSRF tokens handling
         if (restSecurityConfig.isCsrfInable()) {
-            http.addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class);
+            CsrfTokenResponseHeaderBindingFilter csrfTokenResponseHeaderBindingFilter = new CsrfTokenResponseHeaderBindingFilter();
+            csrfTokenResponseHeaderBindingFilter.setCsrfUrl(restSecurityConfig.getCsrfUrl());
+            http.addFilterAfter(csrfTokenResponseHeaderBindingFilter, CsrfFilter.class);
         } else {
             http.csrf().disable();
         }

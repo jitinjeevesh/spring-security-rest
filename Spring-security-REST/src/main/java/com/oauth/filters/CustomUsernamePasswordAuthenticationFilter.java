@@ -17,7 +17,7 @@ import java.io.BufferedReader;
 
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final static Logger log = LoggerFactory.getLogger(CsrfTokenResponseHeaderBindingFilter.class);
+    private final static Logger log = LoggerFactory.getLogger(CustomUsernamePasswordAuthenticationFilter.class);
 
     private String jsonUsername;
     private String jsonPassword;
