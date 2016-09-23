@@ -9,7 +9,7 @@ public class UUIDTokenConfig {
     /**
      * This is the expiry date time of the uuid token generation.
      */
-    @Value("${spring.rest.authentication.uuid.exp}")
+    @Value("${spring.rest.authentication.uuid.exp:10}")
     private Integer exp;
 
     public Integer getExpirationTime() {

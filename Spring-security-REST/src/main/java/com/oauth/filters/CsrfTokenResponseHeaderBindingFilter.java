@@ -1,5 +1,6 @@
 package com.oauth.filters;
 
+import com.oauth.constants.SecurityConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -24,13 +25,12 @@ public class CsrfTokenResponseHeaderBindingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Inside Csrf Token Response Header Binding Filter");
         CsrfToken token = (CsrfToken) request.getAttribute(REQUEST_ATTRIBUTE_NAME);
-        if (token != null) {
-            System.out.println(token.getToken());
+        if (token != null && SecurityConstants.CSRF_URI.equalsIgnoreCase(request.getRequestURI())) {
+            log.info("CSRF token value : ", token.getToken());
             response.setHeader(RESPONSE_HEADER_NAME, token.getHeaderName());
             response.setHeader(RESPONSE_PARAM_NAME, token.getParameterName());
             response.setHeader(RESPONSE_TOKEN_NAME, token.getToken());
         }
-
         filterChain.doFilter(request, response);
     }
 }
