@@ -100,30 +100,13 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
         logger.info("Entering createSession() of UserProfileServiceImpl ");
         User user = userProfileDAO.fetchUser(username);
         if (user != null) {
-            System.out.println("..............................Generate Token................................");
-            System.out.println(restSpringSecurityService.generateToken());
+            AuthenticationToken authenticationToken = restSpringSecurityService.generateToken();
             UserSession session = new UserSession();
             session.setUserId(userProfileService.fetchUser(username));
-            Calendar cal = Calendar.getInstance(); // creates calendar
-            cal.setTime(new Date()); // sets calendar time/date
-            cal.add(Calendar.HOUR_OF_DAY, 6); // adds six hour
-
-            // Sets the time in UTC
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
-            sdf.setCalendar(cal);
-            session.setExpiryDateTime(new Timestamp(sdf.getCalendar().getTime().getTime()));
-            // returns new date object, six hour in the future
-            Map<String, Object> claims = new HashMap<String, Object>();
-            claims.put(CommonConstant.ISS, "raastech");
-            claims.put(CommonConstant.SUB, "raastech");
-            claims.put(CommonConstant.EXP, sdf.getCalendar().getTime().getTime());
-
-            JWTSigner jwt = new JWTSigner("salt");
-            String token = jwt.sign(claims);
-            session.setToken(token);
+            session.setExpiryDateTime(authenticationToken.getExpiryDateTime());
+            session.setToken(authenticationToken.getToken());
             Integer id = (Integer) getCurrentSession().save(session);
-            return new AuthenticationToken(token);
+            return authenticationToken;
         }
         logger.info("Exiting createSession() of UserProfileServiceImpl ");
         return null;
