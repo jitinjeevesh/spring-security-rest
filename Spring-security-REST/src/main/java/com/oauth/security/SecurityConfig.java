@@ -1,12 +1,16 @@
 package com.oauth.security;
 
-import com.oauth.filters.*;
+import com.oauth.config.RESTSecurityConfig;
+import com.oauth.filters.CsrfTokenResponseHeaderBindingFilter;
+import com.oauth.filters.CustomUsernamePasswordAuthenticationFilter;
+import com.oauth.filters.TokenAuthenticationFilter;
 import com.oauth.handler.*;
 import com.oauth.service.RESTSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,17 +20,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * The Class SecurityConfig.
@@ -48,6 +45,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private RESTLogoutSuccessHandler restLogoutSuccessHandler;
     @Autowired
     private RESTTokenAuthenticationSuccessHandler restTokenAuthenticationSuccessHandler;
+    @Autowired
+    private RESTSecurityConfig restSecurityConfig;
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer p = new PropertySourcesPlaceholderConfigurer();
+        p.setIgnoreResourceNotFound(true);
+        return p;
+    }
 
     @Autowired
     @Qualifier("restSecurityUserDetailsService")
@@ -100,8 +106,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout().logoutUrl("/logout").logoutSuccessHandler(restLogoutSuccessHandler);
 //        logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
         // CSRF tokens handling
-//        http.csrf().disable();
-        http.addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class);
+        if (restSecurityConfig.isCsrfInable()) {
+            http.addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class);
+        } else {
+            http.csrf().disable();
+        }
         http.addFilterBefore(tokenAuthenticationFilter(), AnonymousAuthenticationFilter.class);
     }
 
