@@ -1,5 +1,6 @@
 package com.oauth.service;
 
+import com.oauth.data.AuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,9 +12,9 @@ public class RESTSecurityUserDetails implements UserDetails {
     private String password;
     private String username;
     private Boolean isEnabled;
-    private String accessToken;
+    private AuthenticationToken accessToken;
 
-    public RESTSecurityUserDetails(List<? extends GrantedAuthority> authorities, String username, String password, Boolean isEnabled, String accessToken) {
+    public RESTSecurityUserDetails(List<? extends GrantedAuthority> authorities, String username, String password, Boolean isEnabled, AuthenticationToken accessToken) {
         this.authorities = authorities;
         this.password = password;
         this.username = username;
@@ -56,7 +57,7 @@ public class RESTSecurityUserDetails implements UserDetails {
         return isEnabled;
     }
 
-    public String getAccessToken() {
+    public AuthenticationToken getAccessToken() {
         return accessToken;
     }
 }

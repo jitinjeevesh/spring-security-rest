@@ -1,6 +1,8 @@
 package com.oauth.handler;
 
+import com.google.gson.Gson;
 import com.oauth.constants.SecurityConstants;
+import com.oauth.json.AuthenticationDetail;
 import com.oauth.service.RESTSecurityUserDetails;
 import com.oauth.utils.MatchUtil;
 import org.slf4j.Logger;
@@ -37,7 +39,11 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         response.setStatus(HttpServletResponse.SC_OK);
         if (MatchUtil.checkContentType(request.getHeader(SecurityConstants.CONTENT_TYPE))) {
             RESTSecurityUserDetails principal = (RESTSecurityUserDetails) authentication.getPrincipal();
-            response.getWriter().print("{\"responseCode\":\"SUCCESS\",\"accessToken\":" + principal.getAccessToken() + "}");
+            AuthenticationDetail authenticationDetail = new AuthenticationDetail(principal.getUsername(), principal.getAccessToken().getToken(), principal.getAccessToken().getExpiryDateTime().getTime());
+            String json = new Gson().toJson(authenticationDetail);
+            response.setContentType(SecurityConstants.APPLICATION_JSON);
+            response.setCharacterEncoding(SecurityConstants.UTF_ENCODING);
+            response.getWriter().print(json);
             response.getWriter().flush();
         } else {
             super.onAuthenticationSuccess(request, response, authentication);

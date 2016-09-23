@@ -34,7 +34,7 @@ public class RESTSecurityUserDetailsService implements UserDetailsService {
         userProfileDTO.setUserMail(username);
         AuthenticationToken accessToken = authenticationTokenDAO.generate(username);
         if (userProfile != null) {
-            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")), userProfile.getUserMail(), userProfile.getPassword(), true, accessToken.getToken());
+            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")), userProfile.getUserMail(), userProfile.getPassword(), true, accessToken);
         } else {
             throw new UsernameNotFoundException("User name not found");
         }

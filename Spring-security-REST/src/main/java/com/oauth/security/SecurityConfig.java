@@ -1,10 +1,7 @@
 package com.oauth.security;
 
 import com.oauth.filters.*;
-import com.oauth.handler.RESTAuthenticationEntryPoint;
-import com.oauth.handler.RESTAuthenticationFailureHandler;
-import com.oauth.handler.RESTAuthenticationSuccessHandler;
-import com.oauth.handler.RESTLogoutSuccessHandler;
+import com.oauth.handler.*;
 import com.oauth.service.RESTSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private RESTAuthenticationSuccessHandler restAuthenticationSuccessHandler;
     @Autowired
     private RESTLogoutSuccessHandler restLogoutSuccessHandler;
+    @Autowired
+    private RESTTokenAuthenticationSuccessHandler restTokenAuthenticationSuccessHandler;
 
     @Autowired
     @Qualifier("restSecurityUserDetailsService")
@@ -109,12 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     TokenAuthenticationFilter tokenAuthenticationFilter() {
         TokenAuthenticationFilter tokenAuthenticationFilter = new TokenAuthenticationFilter();
-        tokenAuthenticationFilter.setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                System.out.println("success");
-            }
-        });
+        tokenAuthenticationFilter.setAuthenticationSuccessHandler(restTokenAuthenticationSuccessHandler);
         tokenAuthenticationFilter.setAuthenticationManager(new NoOpAuthenticationManager());
         return tokenAuthenticationFilter;
     }
