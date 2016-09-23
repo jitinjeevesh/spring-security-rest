@@ -1,7 +1,8 @@
 package com.oauth.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oauth.dto.RegistrationDto;
+import com.google.gson.Gson;
+import com.oauth.data.LoginRequest;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -60,8 +61,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
                 System.out.println("......................sb.toString..................................");
                 System.out.println(sb.toString());
                 //json transformation
-                ObjectMapper mapper = new ObjectMapper();
-                RegistrationDto loginRequest = mapper.readValue(sb.toString(), RegistrationDto.class);
+                Gson gson = new Gson();
+                LoginRequest loginRequest = gson.fromJson(sb.toString(), LoginRequest.class);
 
                 System.out.println("...............Data...................");
                 System.out.println(loginRequest.getUsername());

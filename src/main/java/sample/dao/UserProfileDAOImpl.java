@@ -2,10 +2,9 @@ package sample.dao;
 
 
 import com.oauth.constants.CommonConstant;
-import com.oauth.dao.UserProfileDAO;
-import com.oauth.dto.AuthenticationTokenDTO;
-import com.oauth.dto.UserProfileDTO;
-import com.oauth.dto.UserRoleDTO;
+import com.oauth.data.AuthenticationToken;
+import com.oauth.data.User;
+import com.oauth.data.UserRole;
 import com.oauth.exception.AuthenticationException;
 import com.oauth.exception.BusinessException;
 import com.oauth.exception.ErrorCodes;
@@ -24,7 +23,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import sample.model.UserProfile;
-import sample.model.UserRole;
 import sample.model.UserSession;
 
 import java.util.ArrayList;
@@ -78,12 +76,12 @@ public class UserProfileDAOImpl implements UserProfileDAO {
     }
 
     /* (non-Javadoc)
-     * @see com.raastech.mobile.rest.dao.UserProfileDAO#getLogin(com.raastech.mobile.rest.entity.Users)
+     * @see com.raastech.mobile.rest.dao.UserDetailDAO#getLogin(com.raastech.mobile.rest.entity.Users)
      */
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public String getLogin(UserProfileDTO users) {
+    public String getLogin(User users) {
         logger.info("Entering in UserProfileDAOImpl getLogin method");
         Criteria criteria = getCurrentSession().createCriteria(UserProfile.class);
         criteria.add(Restrictions.eq("userMail", users.getUserMail()));
@@ -110,12 +108,12 @@ public class UserProfileDAOImpl implements UserProfileDAO {
     }
 
     /* (non-Javadoc)
-     * @see com.raastech.mobile.rest.dao.UserProfileDAO#updateUserSession(com.raastech.mobile.rest.entity.UserSession)
+     * @see com.raastech.mobile.rest.dao.UserDetailDAO#updateUserSession(com.raastech.mobile.rest.entity.UserSession)
      */
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public AuthenticationTokenDTO updateUserSession(AuthenticationTokenDTO session) {
+    public AuthenticationToken updateUserSession(AuthenticationToken session) {
         logger.info("Entering in UserProfileDAOImpl updateUserSession method");
 
         Criteria criteria = getCurrentSession().createCriteria(UserSession.class);
@@ -128,46 +126,46 @@ public class UserProfileDAOImpl implements UserProfileDAO {
             getCurrentSession().merge(session);
             logger.info("Exiting in UserProfileDAOImpl updateUserSession method  updated session object is " + session);
             UserSession userSession = (UserSession) getCurrentSession().get(UserSession.class, id);
-            return new AuthenticationTokenDTO(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
         } else {
             Integer id = (Integer) getCurrentSession().save(session);
             logger.info("Exiting in UserProfileDAOImpl updateUserSession method saved session object is" + session);
             UserSession userSession = (UserSession) getCurrentSession().get(UserSession.class, id);
-            return new AuthenticationTokenDTO(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
         }
 
 
     }
 
     /* (non-Javadoc)
-     * @see com.raastech.mobile.rest.dao.UserProfileDAO#fetchUser(com.raastech.mobile.rest.entity.Users)
+     * @see com.raastech.mobile.rest.dao.UserDetailDAO#fetchUser(com.raastech.mobile.rest.entity.Users)
      */
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public UserProfileDTO fetchUser(UserProfileDTO users) {
+    public User fetchUser(String username) {
         logger.info("Entering in UserProfileDAOImpl fetchUser method");
         Criteria criteria = getCurrentSession().createCriteria(UserProfile.class);
-        criteria.add(Restrictions.eq("userMail", users.getUserMail()));
+        criteria.add(Restrictions.eq("userMail", username));
 //		criteria.add(Restrictions.eq("password", users.getPassword()));
         List<UserProfile> usersList = (ArrayList<UserProfile>) criteria.list();
         if (usersList != null && !usersList.isEmpty()) {
             logger.info("Exiting in UserProfileDAOImpl fetchUser method user is" + usersList.get(0));
             UserProfile userProfile = usersList.get(0);
-            UserRole userRole = userProfile.getUserRole();
-            UserRoleDTO userRoleDTO = new UserRoleDTO(userRole.getRoleId(), userRole.getUserRole());
-            return new UserProfileDTO(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
+            sample.model.UserRole userRole = userProfile.getUserRole();
+            UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
+            return new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
         }
         logger.info("Exiting in UserProfileDAOImpl getLogin method");
         return null;
     }
 
     /* (non-Javadoc)
-     * @see com.raastech.mobile.rest.dao.UserProfileDAO#validateToken(java.lang.String)
+     * @see com.raastech.mobile.rest.dao.UserDetailDAO#validateToken(java.lang.String)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public AuthenticationTokenDTO validateToken(String token) {
+    public AuthenticationToken validateToken(String token) {
         logger.info("Entering in UserProfileDAOImpl validateToken method");
         Criteria criteria = getCurrentSession().createCriteria(UserSession.class);
         criteria.add(Restrictions.eq("token", token));
@@ -176,18 +174,18 @@ public class UserProfileDAOImpl implements UserProfileDAO {
         if (sessionList != null && !sessionList.isEmpty()) {
             logger.info("Exiting in UserProfileDAOImpl validateToken method got session object" + sessionList.get(0));
             UserSession userSession = sessionList.get(0);
-            return new AuthenticationTokenDTO(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
         }
         logger.info("Exiting in UserProfileDAOImpl validateToken method");
         throw new RequiredFieldMissingException(CommonConstant.SECRET_TOKEN_INVALID, ErrorCodes.CODE_INVALID_FIELD);
     }
 
     /* (non-Javadoc)
-     * @see com.raastech.mobile.rest.dao.UserProfileDAO
+     * @see com.raastech.mobile.rest.dao.UserDetailDAO
      */
     @SuppressWarnings("unchecked")
     @Override
-    public UserProfileDTO fetchUserByUserId(Integer id) {
+    public User fetchUserByUserId(Integer id) {
         logger.info("Entering in UserProfileDAOImpl fetchUserByUserId method");
         Criteria criteria = getCurrentSession().createCriteria(UserProfile.class);
         criteria.add(Restrictions.eq("id", id));
@@ -196,9 +194,9 @@ public class UserProfileDAOImpl implements UserProfileDAO {
         if (usersList != null && !usersList.isEmpty()) {
             logger.info("Exiting in UserProfileDAOImpl fetchUserByUserId method user object is" + usersList.get(0));
             UserProfile userProfile = usersList.get(0);
-            UserRole userRole = userProfile.getUserRole();
-            UserRoleDTO userRoleDTO = new UserRoleDTO(userRole.getRoleId(), userRole.getUserRole());
-            return new UserProfileDTO(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
+            sample.model.UserRole userRole = userProfile.getUserRole();
+            UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
+            return new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
         }
         logger.info("Exiting in UserProfileDAOImpl fetchUserByUserId method");
         return null;

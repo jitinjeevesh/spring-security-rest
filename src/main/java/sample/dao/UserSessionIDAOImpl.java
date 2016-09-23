@@ -2,11 +2,11 @@ package sample.dao;
 
 import com.oauth.constants.CommonConstant;
 import com.oauth.dao.AuthenticationTokenDAO;
-import com.oauth.dao.UserProfileDAO;
-import com.oauth.dto.AuthenticationTokenDTO;
-import com.oauth.dto.UserProfileDTO;
+import com.oauth.data.AuthenticationToken;
+import com.oauth.data.User;
 import com.oauth.exception.BusinessException;
-import com.oauth.utility.JWTSigner;
+import com.oauth.authentication.algorithm.JWTSigner;
+import com.oauth.service.RESTSpringSecurityService;
 import org.springframework.transaction.annotation.Transactional;
 import sample.controller.UserProfileController;
 import org.hibernate.Criteria;
@@ -61,6 +61,9 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Autowired
+    private RESTSpringSecurityService restSpringSecurityService;
+
     /**
      * Gets the current session.
      *
@@ -76,9 +79,10 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
 
     }
 
+    //TODO:Move to spring security
     @SuppressWarnings("unchecked")
     @Override
-    public AuthenticationTokenDTO findByAccessToken(String token) {
+    public AuthenticationToken find(String token) {
         logger.info("Entering in UserSessionIDAOImpl findByAccessToken method");
         Criteria criteria = getCurrentSession().createCriteria(UserSession.class);
         criteria.add(Restrictions.eq("token", token));
@@ -86,19 +90,20 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
         if (userSessionList != null && !userSessionList.isEmpty()) {
             UserSession userSession = userSessionList.get(0);
             logger.info("UserSesion Exiting ");
-            return new AuthenticationTokenDTO(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
+            return new AuthenticationToken(userSession.getToken_id(), userSession.getToken(), userSession.getExpiryDateTime(), userSession.getUserId().getId());
         }
         return null;
     }
 
     @Override
-    public String generate(UserProfileDTO userProfileDTO) {
+    public AuthenticationToken generate(String username) {
         logger.info("Entering createSession() of UserProfileServiceImpl ");
-
-        UserProfileDTO user = userProfileDAO.fetchUser(userProfileDTO);
+        User user = userProfileDAO.fetchUser(username);
         if (user != null) {
+            System.out.println("..............................Generate Token................................");
+            System.out.println(restSpringSecurityService.generateToken());
             UserSession session = new UserSession();
-            session.setUserId(userProfileService.fetchUser(userProfileDTO.getUserMail()));
+            session.setUserId(userProfileService.fetchUser(username));
             Calendar cal = Calendar.getInstance(); // creates calendar
             cal.setTime(new Date()); // sets calendar time/date
             cal.add(Calendar.HOUR_OF_DAY, 6); // adds six hour
@@ -118,7 +123,7 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
             String token = jwt.sign(claims);
             session.setToken(token);
             Integer id = (Integer) getCurrentSession().save(session);
-            return token;
+            return new AuthenticationToken(token);
         }
         logger.info("Exiting createSession() of UserProfileServiceImpl ");
         return null;

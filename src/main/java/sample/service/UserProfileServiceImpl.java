@@ -2,22 +2,19 @@ package sample.service;
 
 
 import com.oauth.constants.CommonConstant;
-import com.oauth.dao.UserProfileDAO;
-import com.oauth.dto.UserProfileDTO;
-import com.oauth.dto.UserRoleDTO;
+import com.oauth.data.User;
+import com.oauth.data.UserRole;
 import com.oauth.exception.AuthenticationException;
 import com.oauth.exception.BusinessException;
 import com.oauth.exception.ErrorCodes;
-import com.oauth.exception.ObjectNotFoundException;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import sample.dao.UserProfileDAO;
 import sample.model.UserProfile;
-import sample.model.UserRole;
 import sample.model.UserSession;
 import sample.controller.UserProfileController;
-import com.oauth.utility.JWTSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 // TODO: Auto-generated Javadoc
@@ -117,9 +112,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public UserSession doLogin(UserProfile userProfile, String deviceId) {
         logger.info("Entering doLogin() of UserProfileServiceImpl ");
-        UserRole userRole = userProfile.getUserRole();
-        UserRoleDTO userRoleDTO = new UserRoleDTO(userRole.getRoleId(), userRole.getUserRole());
-        UserProfileDTO userProfileDTO = new UserProfileDTO(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
+        sample.model.UserRole userRole = userProfile.getUserRole();
+        UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
+        User userProfileDTO = new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
         String result = userProfileDAO.getLogin(userProfileDTO);
         UserSession token = null;
         if (result.equals(CommonConstant.OK)) {
@@ -173,10 +168,10 @@ public class UserProfileServiceImpl implements UserProfileService {
         UserSession session = null;
   /*  logger.info("Entering createSession() of UserProfileServiceImpl ");
     UserRole userRole = userProfile.getUserRole();
-    UserRoleDTO userRoleDTO = new UserRoleDTO(userRole.getRoleId(), userRole.getUserRole());
-    UserProfileDTO userProfileDTO= new UserProfileDTO(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
+    UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
+    User userProfileDTO= new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
 
-    UserProfileDTO user = userProfileDAO.fetchUser(userProfileDTO);
+    User user = userProfileDAO.fetchUser(userProfileDTO);
     if (user != null) {
       logger.info("Entered createSession() inside for session****************************" + userProfile);
       session = new UserSession();
