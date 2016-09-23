@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer p = new PropertySourcesPlaceholderConfigurer();
         p.setIgnoreResourceNotFound(true);
+        p.setIgnoreUnresolvablePlaceholders(true);
         return p;
     }
 
