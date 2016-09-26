@@ -26,15 +26,11 @@ public class RESTSecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = new User();
-        user.setUserMail(username);
         log.info(" Received user name", username);
         User userProfile = userDetailDAO.fetchUser(username);
-        User userProfileDTO = new User();
-        userProfileDTO.setUserMail(username);
         AuthenticationToken accessToken = authenticationTokenDAO.generate(username);
         if (userProfile != null) {
-            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")), userProfile.getUserMail(), userProfile.getPassword(), true, accessToken);
+            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority(userProfile.getUserRole().getRole())), userProfile.getUserMail(), userProfile.getPassword(), true, accessToken);
         } else {
             throw new UsernameNotFoundException("User name not found");
         }

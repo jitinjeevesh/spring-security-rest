@@ -87,6 +87,9 @@ public class UserDetailDAOImpl implements UserDetailDAO {
             UserProfile userProfile = usersList.get(0);
             sample.model.UserRole userRole = userProfile.getUserRole();
             UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
+            System.out.println(".................................Inside fetch user..............................");
+            System.out.println(userRole.getUserRole());
+            System.out.println(userRoleDTO.getRole());
             return new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
         }
         logger.info("Exiting in UserProfileDAOImpl getLogin method");

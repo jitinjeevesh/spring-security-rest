@@ -4,8 +4,11 @@ import com.oauth.authentication.config.TokenGeneratorConfig;
 import com.oauth.authentication.generator.TokenGenerator;
 import com.oauth.authentication.generator.TokenGeneratorFactory;
 import com.oauth.data.AuthenticationToken;
+import com.oauth.data.RoleUrlMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class RESTSpringSecurityService {
@@ -33,5 +36,4 @@ public class RESTSpringSecurityService {
     public AuthenticationToken generateToken(TokenGenerator tokenGenerator) {
         return tokenGenerator.generate();
     }
-
 }

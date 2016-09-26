@@ -86,6 +86,34 @@ public class UserProfileController {
         System.out.println("hiu");
     }
 
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void user(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("user");
+    }
+
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void admin(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("admin");
+    }
+
+    @RequestMapping(value = "/open", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void open(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("open");
+    }
+
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void all(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("all");
+    }
+
 
 //	public static void populateAccessTokenCookie(boolean supportCookie, HttpServletResponse response, AuthenticationDetail body) {
 //	    // supportCookie ?

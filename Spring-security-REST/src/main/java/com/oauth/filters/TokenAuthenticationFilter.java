@@ -1,17 +1,17 @@
 package com.oauth.filters;
 
+import com.oauth.config.RESTSecurityConfig;
 import com.oauth.dao.AuthenticationTokenDAO;
+import com.oauth.dao.RoleUrlMappingDAO;
 import com.oauth.dao.UserDetailDAO;
 import com.oauth.data.AuthenticationToken;
+import com.oauth.data.RoleUrlMapping;
 import com.oauth.data.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.List;
 
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -36,6 +37,10 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
     private AuthenticationTokenDAO authenticationTokenDAO;
     @Autowired
     private UserDetailDAO userDetailDAO;
+    @Autowired
+    private RoleUrlMappingDAO roleUrlMappingDAO;
+    @Autowired
+    private RESTSecurityConfig restSecurityConfig;
 
     public final String SECURITY_TOKEN_KEY = "X-Auth-Token";
     private String token = null;
@@ -47,6 +52,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+//        AuthenticationTrustResolverImpl
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         this.token = request.getHeader(SECURITY_TOKEN_KEY);
@@ -57,6 +63,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 //            SecurityContextHolder.clearContext();
 //            return;
 //        }
+
         if (token != null) {
             Authentication authResult;
             try {
@@ -82,6 +89,20 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         chain.doFilter(request, response);
     }
 
+    private boolean grantFullyRole(String uri) {
+        List<RoleUrlMapping> roleUrlMappings = roleUrlMappingDAO.fetchRoleUrlMapping();
+        if (!roleUrlMappings.isEmpty()) {
+            for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
+                System.out.println(roleUrlMapping.getRole());
+                if (roleUrlMapping.getRole().equalsIgnoreCase(restSecurityConfig.getPermitAll())) {
+                    System.out.println("....Fully role.....");
+                    return roleUrlMapping.getUrls().contains(uri);
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Attempt to authenticate request
@@ -93,7 +114,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         if (token == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
         }
-        AbstractAuthenticationToken userAuthenticationToken = authUserByToken(token);
+        AbstractAuthenticationToken userAuthenticationToken = authUserByToken(request.getRequestURI(), token);
         if (userAuthenticationToken == null)
             throw new AuthenticationServiceException("Invalid Token");
         return userAuthenticationToken;
@@ -113,20 +134,30 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      *
      * @return
      */
-    private AbstractAuthenticationToken authUserByToken(String token) {
+    private AbstractAuthenticationToken authUserByToken(String uri, String token) {
         if (token == null) return null;
-        //  String username = getUserNameFromToken(); //logic to extract username from token
-        //String role = getRolesFromToken(); //extract role information from token
-
-//        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-//        authorities.add(new SimpleGrantedAuthority(role));
         AuthenticationToken authenticationToken = authenticationTokenDAO.find(token);
         if (authenticationToken == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
         }
         User user = userDetailDAO.fetchUser(authenticationToken.getUsername());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUserMail(), user.getPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        if (!isURIAuthenticate(user, uri)) {
+            throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "URL not authenticated"));
+        }
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUserMail(), user.getPassword(), Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getRole())));
         log.info("Authentication successfully for token :", token);
         return usernamePasswordAuthenticationToken;
+    }
+
+    private boolean isURIAuthenticate(User user, String uri) {
+        List<RoleUrlMapping> roleUrlMappings = roleUrlMappingDAO.fetchRoleUrlMapping();
+        if (!roleUrlMappings.isEmpty()) {
+            for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
+                if (roleUrlMapping.getRole().equalsIgnoreCase(user.getUserRole().getRole())) {
+                    return roleUrlMapping.getUrls().contains(uri);
+                }
+            }
+        }
+        return false;
     }
 }

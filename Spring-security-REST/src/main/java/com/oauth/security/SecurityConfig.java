@@ -1,6 +1,8 @@
 package com.oauth.security;
 
 import com.oauth.config.RESTSecurityConfig;
+import com.oauth.dao.RoleUrlMappingDAO;
+import com.oauth.data.RoleUrlMapping;
 import com.oauth.filters.CsrfTokenResponseHeaderBindingFilter;
 import com.oauth.filters.CustomUsernamePasswordAuthenticationFilter;
 import com.oauth.filters.TokenAuthenticationFilter;
@@ -23,7 +25,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class SecurityConfig.
@@ -97,9 +106,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http.authorizeRequests().antMatchers("/api/**").authenticated();
-
+//        http.authorizeRequests().antMatchers("/api/all").permitAll();
+        http.authorizeRequests().antMatchers("/**").authenticated();
         http.addFilterBefore(customUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         http.formLogin().loginProcessingUrl("/login").successHandler(restAuthenticationSuccessHandler).permitAll();
