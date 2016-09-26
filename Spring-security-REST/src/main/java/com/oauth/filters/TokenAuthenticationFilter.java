@@ -7,6 +7,8 @@ import com.oauth.dao.UserDetailDAO;
 import com.oauth.data.AuthenticationToken;
 import com.oauth.data.RoleUrlMapping;
 import com.oauth.data.User;
+import com.oauth.service.RESTSecurityUserDetails;
+import com.oauth.service.RESTSpringSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
     @Autowired
     private RESTSecurityConfig restSecurityConfig;
 
-    public final String SECURITY_TOKEN_KEY = "X-Auth-Token";
     private String token = null;
 
     public TokenAuthenticationFilter() {
@@ -55,7 +56,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 //        AuthenticationTrustResolverImpl
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-        this.token = request.getHeader(SECURITY_TOKEN_KEY);
+        this.token = request.getHeader(restSecurityConfig.getTokenHeader());
 
         log.info("Token successfully received inside token validator", token);
 //        if(request.getParameter(actionParameter) !=null &&
@@ -109,7 +110,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        String token = request.getHeader(SECURITY_TOKEN_KEY);
+        String token = request.getHeader(restSecurityConfig.getTokenHeader());
         log.info("Attempt authentication for token :", token);
         if (token == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
@@ -144,7 +145,10 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         if (!isURIAuthenticate(user, uri)) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "URL not authenticated"));
         }
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUserMail(), user.getPassword(), Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getRole())));
+
+        RESTSecurityUserDetails restSecurityUserDetails = new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getRole())), user.getUserMail(), user.getPassword(), true, authenticationToken);
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(restSecurityUserDetails, user.getPassword(), Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getRole())));
         log.info("Authentication successfully for token :", token);
         return usernamePasswordAuthenticationToken;
     }

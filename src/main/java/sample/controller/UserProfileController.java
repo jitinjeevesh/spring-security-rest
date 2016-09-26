@@ -86,28 +86,28 @@ public class UserProfileController {
         System.out.println("hiu");
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void user(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("user");
     }
 
-    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void admin(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("admin");
     }
 
-    @RequestMapping(value = "/open", method = RequestMethod.GET)
+    @RequestMapping(value = "/open", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void open(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("open");
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/all", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void all(HttpServletRequest request, HttpServletResponse response) {

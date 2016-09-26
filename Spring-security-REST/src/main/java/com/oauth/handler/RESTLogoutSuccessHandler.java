@@ -1,5 +1,6 @@
 package com.oauth.handler;
 
+import com.oauth.service.RESTSecurityUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,7 @@ public class RESTLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        // do whatever you want
-//        super.onLogoutSuccess(request, response, authentication);
+        System.out.println(".........................inside logout..................");
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().flush();
     }

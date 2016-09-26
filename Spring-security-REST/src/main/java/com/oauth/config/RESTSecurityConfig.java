@@ -23,6 +23,15 @@ public class RESTSecurityConfig {
     @Value("${spring.security.rest.fully.authenticated.role:PERMIT_ALL}")
     private String permitAll;
 
+    @Value("${spring.security.rest.auth.token.key:X-Auth-Token}")
+    private String tokenHeader;
+
+    @Value("${spring.security.rest.login.url:/login}")
+    private String loginUrl;
+
+    @Value("${spring.security.rest.logout.session:false}")
+    private boolean logoutFromSession;
+
     public boolean isCsrfInable() {
         return isCsrfInable;
     }
@@ -61,5 +70,29 @@ public class RESTSecurityConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getTokenHeader() {
+        return tokenHeader;
+    }
+
+    public void setTokenHeader(String tokenHeader) {
+        this.tokenHeader = tokenHeader;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    public boolean isLogoutFromSession() {
+        return logoutFromSession;
+    }
+
+    public void setLogoutFromSession(boolean logoutFromSession) {
+        this.logoutFromSession = logoutFromSession;
     }
 }
