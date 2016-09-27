@@ -21,8 +21,6 @@ public class RESTLogoutCustomHandler implements LogoutHandler {
     //TODO:Needs to refactor when direct call logout.
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        System.out.println("..........................RESTLogoutCustomHandler.....................");
-        System.out.println(request.getHeader("X-Auth-Token"));
         RESTSecurityUserDetails principal = (RESTSecurityUserDetails) authentication.getPrincipal();
         if (restSecurityConfig.isLogoutFromSession()) {
             logoutDAO.session(principal.getAccessToken().getToken());

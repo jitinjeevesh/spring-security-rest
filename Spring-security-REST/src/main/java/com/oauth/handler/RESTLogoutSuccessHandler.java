@@ -15,8 +15,8 @@ public class RESTLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println(".........................inside logout..................");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().flush();
+//        response.setStatus(HttpServletResponse.SC_OK);
+//        response.getWriter().flush();
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication closed by user");
     }
 }

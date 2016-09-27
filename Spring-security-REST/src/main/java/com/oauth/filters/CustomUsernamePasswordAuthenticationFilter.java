@@ -64,10 +64,9 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
                 while ((line = reader.readLine()) != null) {
                     sb.append(line);
                 }
-                log.info("Authentication request successfully accept for : " + sb.toString());
                 Gson gson = new Gson();
                 Map fromJson = gson.fromJson(sb.toString(), Map.class);
-                log.info("Authentication request successfully bind for : " + fromJson);
+                log.info("Authentication request successfully bind for : " + fromJson.get(restSecurityConfig.getUsername()).toString());
                 this.jsonUsername = fromJson.get(restSecurityConfig.getUsername()).toString();
                 this.jsonPassword = fromJson.get(restSecurityConfig.getPassword()).toString();
             } catch (Exception e) {

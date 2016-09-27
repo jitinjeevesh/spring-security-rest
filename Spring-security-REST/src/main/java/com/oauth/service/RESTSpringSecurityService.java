@@ -5,6 +5,8 @@ import com.oauth.authentication.generator.TokenGenerator;
 import com.oauth.authentication.generator.TokenGeneratorFactory;
 import com.oauth.crypto.CryptoConfig;
 import com.oauth.crypto.PasswordGeneratorFactory;
+import com.oauth.dao.AuthenticationTokenDAO;
+import com.oauth.dao.UserDetailDAO;
 import com.oauth.data.AuthenticationToken;
 import com.oauth.data.RoleUrlMapping;
 import org.neo4j.cypher.internal.compiler.v2_1.functions.Str;
@@ -16,6 +18,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * <p/>
+ * Custom REST service which includes all the essentials methods.
+ * <p/>
+ *
+ * @author Jeevesh Pandey
+ */
 @Component
 public class RESTSpringSecurityService {
 
@@ -47,6 +56,13 @@ public class RESTSpringSecurityService {
         return tokenGenerator.generate();
     }
 
+
+    /**
+     * This method is used to encrypt the password.
+     *
+     * @param password String raw password
+     * @return encrypted password
+     */
     public String encodePassword(String password) {
         PasswordEncoder passwordEncoder = passwordGeneratorFactory.apply(cryptoConfig.getAlgorithm());
         return passwordEncoder.encode(password);
