@@ -19,7 +19,7 @@ public class RESTSpringSecurityService {
     private TokenGeneratorFactory tokenGeneratorFactory;
 
     /**
-     * This method is used to generate token with the pre defined strategies for token generation.
+     * This method is used to save token with the pre defined strategies for token generation.
      * For eg: JWT, UUID
      *
      * @return AuthenticationToken with all the token information.
@@ -29,7 +29,7 @@ public class RESTSpringSecurityService {
     }
 
     /**
-     * This method is used to generate token with the user defined strategies.
+     * This method is used to save token with the user defined strategies.
      *
      * @return AuthenticationToken with all the token information.
      */

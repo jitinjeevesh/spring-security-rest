@@ -11,7 +11,7 @@ public class JWTTokenConfig {
      * The processing of this claim is generally application specific.
      * The iss value is a case-sensitive string containing a StringOrURI value. Use of this claim is OPTIONAL.
      */
-    @Value("${spring.rest.authentication.jwt.iss:springrest}")
+    @Value("${spring.security.rest.authentication.jwt.iss:springrest}")
     private String iss;
 
     /**
@@ -21,13 +21,13 @@ public class JWTTokenConfig {
      * The processing of this claim is generally application specific.
      * The sub value is a case-sensitive string containing a StringOrURI value. Use of this claim is OPTIONAL.
      */
-    @Value("${spring.rest.authentication.jwt.sub:springrest}")
+    @Value("${spring.security.rest.authentication.jwt.sub:springrest}")
     private String sub;
 
     /**
      * Salt is random data that is used as an additional input to a one-way function that "hashes" a password or passphrase.
      */
-    @Value("${spring.rest.authentication.jwt.saltKey:springrest}")
+    @Value("${spring.security.rest.authentication.jwt.saltKey:springrest}")
     private String salt;
 
     /**
@@ -36,7 +36,7 @@ public class JWTTokenConfig {
      * Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew.
      * Its value MUST be a number containing a NumericDate value. Use of this claim is OPTIONAL.
      */
-    @Value("${spring.rest.authentication.jwt.exp:30}")
+    @Value("${spring.security.rest.authentication.jwt.exp:30}")
     private Integer exp;
 
     public String getIss() {

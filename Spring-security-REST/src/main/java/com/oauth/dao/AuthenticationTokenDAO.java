@@ -17,10 +17,9 @@ public interface AuthenticationTokenDAO {
 
 
     /**
-     * This method is used to generate the authentication token for particular user.
+     * This method is used to save the authentication token for particular user.
      *
      * @param username String token
-     * @return AuthenticationToken with token information.
      */
-    AuthenticationToken generate(String username);
+    void save(String username, AuthenticationToken authenticationToken);
 }

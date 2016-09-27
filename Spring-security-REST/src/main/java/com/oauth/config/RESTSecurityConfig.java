@@ -3,6 +3,8 @@ package com.oauth.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class RESTSecurityConfig {
     /**
@@ -10,9 +12,6 @@ public class RESTSecurityConfig {
      */
     @Value("${spring.security.rest.csrf.enable:false}")
     private boolean isCsrfInable;
-
-    @Value("${spring.security.rest.csrf.url:/csrf}")
-    private String csrfUrl;
 
     @Value("${spring.security.rest.username.key:username}")
     private String username;
@@ -32,20 +31,16 @@ public class RESTSecurityConfig {
     @Value("${spring.security.rest.logout.session:false}")
     private boolean logoutFromSession;
 
+    //    @Value("#{'${spring.security.rest.csrf.exclude.urls}'.split(',')}")
+    @Value("${spring.security.rest.csrf.exclude.urls:}")
+    private List<String> excludeCSRFUrl;
+
     public boolean isCsrfInable() {
         return isCsrfInable;
     }
 
     public void setIsCsrfInable(boolean isCsrfInable) {
         this.isCsrfInable = isCsrfInable;
-    }
-
-    public String getCsrfUrl() {
-        return csrfUrl;
-    }
-
-    public void setCsrfUrl(String csrfUrl) {
-        this.csrfUrl = csrfUrl;
     }
 
     public String getPermitAll() {
@@ -94,5 +89,13 @@ public class RESTSecurityConfig {
 
     public void setLogoutFromSession(boolean logoutFromSession) {
         this.logoutFromSession = logoutFromSession;
+    }
+
+    public List<String> getExcludeCSRFUrl() {
+        return excludeCSRFUrl;
+    }
+
+    public void setExcludeCSRFUrl(List<String> excludeCSRFUrl) {
+        this.excludeCSRFUrl = excludeCSRFUrl;
     }
 }

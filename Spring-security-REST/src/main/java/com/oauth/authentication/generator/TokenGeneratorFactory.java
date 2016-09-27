@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * This is a factory class which generate and gives the authentication token on basis of algorithm used.
+ * This is a factory class which save and gives the authentication token on basis of algorithm used.
  */
 @Component
 public class TokenGeneratorFactory {

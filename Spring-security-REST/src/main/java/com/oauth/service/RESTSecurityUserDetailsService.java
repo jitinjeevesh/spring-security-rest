@@ -23,14 +23,17 @@ public class RESTSecurityUserDetailsService implements UserDetailsService {
     private UserDetailDAO userDetailDAO;
     @Autowired
     private AuthenticationTokenDAO authenticationTokenDAO;
+    @Autowired
+    private RESTSpringSecurityService restSpringSecurityService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info(" Received user name", username);
         User userProfile = userDetailDAO.fetchUser(username);
-        AuthenticationToken accessToken = authenticationTokenDAO.generate(username);
         if (userProfile != null) {
-            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority(userProfile.getUserRole().getRole())), userProfile.getUserMail(), userProfile.getPassword(), true, accessToken);
+            AuthenticationToken authenticationToken = restSpringSecurityService.generateToken();
+            authenticationTokenDAO.save(username, authenticationToken);
+            return new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority(userProfile.getUserRole().getRole())), userProfile.getUserMail(), userProfile.getPassword(), true, authenticationToken);
         } else {
             throw new UsernameNotFoundException("User name not found");
         }

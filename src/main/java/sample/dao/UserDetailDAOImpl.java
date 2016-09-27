@@ -80,16 +80,12 @@ public class UserDetailDAOImpl implements UserDetailDAO {
         logger.info("Entering in UserProfileDAOImpl fetchUser method");
         Criteria criteria = getCurrentSession().createCriteria(UserProfile.class);
         criteria.add(Restrictions.eq("userMail", username));
-//		criteria.add(Restrictions.eq("password", users.getPassword()));
         List<UserProfile> usersList = (ArrayList<UserProfile>) criteria.list();
         if (usersList != null && !usersList.isEmpty()) {
             logger.info("Exiting in UserProfileDAOImpl fetchUser method user is" + usersList.get(0));
             UserProfile userProfile = usersList.get(0);
             sample.model.UserRole userRole = userProfile.getUserRole();
             UserRole userRoleDTO = new UserRole(userRole.getRoleId(), userRole.getUserRole());
-            System.out.println(".................................Inside fetch user..............................");
-            System.out.println(userRole.getUserRole());
-            System.out.println(userRoleDTO.getRole());
             return new User(userProfile.getId(), userProfile.getUserMail(), userProfile.getFirstName(), userProfile.getLastName(), userProfile.getPassword(), userRoleDTO);
         }
         logger.info("Exiting in UserProfileDAOImpl getLogin method");

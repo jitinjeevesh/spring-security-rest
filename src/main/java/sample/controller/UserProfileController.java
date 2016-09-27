@@ -41,9 +41,9 @@ public class UserProfileController {
 
 
     /**
-     * This API is used to do login and generate token for the user using Users and UserSession class. The token expiration  time is 6 hours
+     * This API is used to do login and save token for the user using Users and UserSession class. The token expiration  time is 6 hours
      * This API also takes device id for the consuming parties where they will provide the unique device id with username and password.
-     * The same token will be returned id the provided device already exist in the database and if not they we will generate the token for the User.
+     * The same token will be returned id the provided device already exist in the database and if not they we will save the token for the User.
      *
      * @param request  the request
      * @param response the response

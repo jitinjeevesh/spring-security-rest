@@ -2,12 +2,11 @@ package com.oauth.security;
 
 import com.oauth.config.RESTSecurityConfig;
 import com.oauth.constants.SecurityConstants;
-import com.oauth.dao.RoleUrlMappingDAO;
-import com.oauth.data.RoleUrlMapping;
 import com.oauth.filters.CsrfTokenResponseHeaderBindingFilter;
 import com.oauth.filters.CustomUsernamePasswordAuthenticationFilter;
 import com.oauth.filters.TokenAuthenticationFilter;
 import com.oauth.handler.*;
+import com.oauth.matcher.RESTCsrfRequestMatcher;
 import com.oauth.service.RESTSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,17 +22,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.csrf.*;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Class SecurityConfig.
@@ -59,6 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private RESTLogoutCustomHandler restLogoutCustomHandler;
     @Autowired
     private RESTSecurityConfig restSecurityConfig;
+    @Autowired
+    private RESTCsrfRequestMatcher restCsrfRequestMatcher;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -120,8 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // CSRF tokens handling
         if (restSecurityConfig.isCsrfInable()) {
             CsrfTokenResponseHeaderBindingFilter csrfTokenResponseHeaderBindingFilter = new CsrfTokenResponseHeaderBindingFilter();
-            csrfTokenResponseHeaderBindingFilter.setCsrfUrl(restSecurityConfig.getCsrfUrl());
-            http.addFilterAfter(csrfTokenResponseHeaderBindingFilter, CsrfFilter.class);
+            http.csrf().requireCsrfProtectionMatcher(restCsrfRequestMatcher).and().addFilterAfter(csrfTokenResponseHeaderBindingFilter, CsrfFilter.class);
         } else {
             http.csrf().disable();
         }

@@ -96,19 +96,16 @@ public class UserSessionIDAOImpl implements AuthenticationTokenDAO {
     }
 
     @Override
-    public AuthenticationToken generate(String username) {
+    public void save(String username, AuthenticationToken authenticationToken) {
         logger.info("Entering createSession() of UserProfileServiceImpl ");
         User user = userProfileDAO.fetchUser(username);
         if (user != null) {
-            AuthenticationToken authenticationToken = restSpringSecurityService.generateToken();
             UserSession session = new UserSession();
             session.setUserId(userProfileService.fetchUser(username));
             session.setExpiryDateTime(authenticationToken.getExpiryDateTime());
             session.setToken(authenticationToken.getToken());
-            Integer id = (Integer) getCurrentSession().save(session);
-            return authenticationToken;
+            getCurrentSession().save(session);
         }
         logger.info("Exiting createSession() of UserProfileServiceImpl ");
-        return null;
     }
 }

@@ -10,7 +10,7 @@ public class TokenGeneratorConfig {
      * Authentication name will be the token generation mechanism name
      * i.e. JWT or UUID etc.
      */
-    @Value("${spring.rest.authentication.name}")
+    @Value("${spring.security.rest.authentication.name:UUID}")
     private String authentication;
 
     public String getAuthentication() {
