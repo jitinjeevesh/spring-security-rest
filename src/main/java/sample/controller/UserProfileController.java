@@ -3,6 +3,7 @@ package sample.controller;
 import com.oauth.exception.ErrorCodes;
 import com.oauth.exception.RequiredFieldMissingException;
 import com.oauth.json.AuthenticationDetail;
+import com.oauth.service.RESTSpringSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,8 @@ public class UserProfileController {
      */
     @Autowired
     public UserProfileService userProfileService;
+    @Autowired
+    private RESTSpringSecurityService restSpringSecurityService;
 
 
     /**
@@ -104,6 +107,7 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void open(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println(restSpringSecurityService.encodePassword("pass123"));
         System.out.println("open");
     }
 

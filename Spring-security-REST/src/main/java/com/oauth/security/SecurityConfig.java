@@ -2,6 +2,8 @@ package com.oauth.security;
 
 import com.oauth.config.RESTSecurityConfig;
 import com.oauth.constants.SecurityConstants;
+import com.oauth.crypto.CryptoConfig;
+import com.oauth.crypto.PasswordGeneratorFactory;
 import com.oauth.filters.CsrfTokenResponseHeaderBindingFilter;
 import com.oauth.filters.CustomUsernamePasswordAuthenticationFilter;
 import com.oauth.filters.TokenAuthenticationFilter;
@@ -53,6 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private RESTSecurityConfig restSecurityConfig;
     @Autowired
     private RESTCsrfRequestMatcher restCsrfRequestMatcher;
+    @Autowired
+    private PasswordGeneratorFactory passwordGeneratorFactory;
+    @Autowired
+    private CryptoConfig cryptoConfig;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -77,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(restSecurityUserDetailsService);
-//        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setPasswordEncoder(passwordGeneratorFactory.apply(cryptoConfig.getAlgorithm()));
 //        authenticationProvider.setSaltSource(saltSource());
         return authenticationProvider;
     }
