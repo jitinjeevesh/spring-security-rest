@@ -52,7 +52,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws AuthenticationException, IOException, ServletException {
 //        AuthenticationTrustResolverImpl
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
@@ -113,7 +113,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         if (token == null) {
             throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
         }
-        AbstractAuthenticationToken userAuthenticationToken = authUserByToken(request.getRequestURI(), token);
+        AbstractAuthenticationToken userAuthenticationToken = authUserByToken(response, request.getRequestURI(), token);
         if (userAuthenticationToken == null)
             throw new AuthenticationServiceException("Invalid Token");
         return userAuthenticationToken;
@@ -133,7 +133,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      *
      * @return
      */
-    private AbstractAuthenticationToken authUserByToken(String uri, String token) {
+    private AbstractAuthenticationToken authUserByToken(HttpServletResponse response,String uri, String token) throws AuthenticationException {
         if (token == null) return null;
         AuthenticationToken authenticationToken = authenticationTokenDAO.find(token);
         if (authenticationToken == null) {
@@ -141,7 +141,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         }
         User user = userDetailDAO.fetchUser(authenticationToken.getUsername());
         if (!isURIAuthenticate(user, uri)) {
-            throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "URL not authenticated"));
+            throw new AccessDeniedException(MessageFormat.format("Error | {0}", "Access denied"));
         }
 
         RESTSecurityUserDetails restSecurityUserDetails = new RESTSecurityUserDetails(Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getRole())), user.getUserMail(), user.getPassword(), true, authenticationToken);
@@ -163,7 +163,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
                 }
             }
         } catch (Exception e) {
-            throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "URL not authenticated"));
+            throw new AccessDeniedException(MessageFormat.format("Error | {0}", "Access denied"));
         }
         return false;
     }

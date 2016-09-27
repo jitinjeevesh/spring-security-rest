@@ -74,7 +74,7 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         if (isDba(roles)) {
             url = "/db";
         } else if (isAdmin(roles)) {
-            url = "/admin";
+            url = "/api";
         } else if (isUser(roles)) {
             url = "/home";
         } else {
