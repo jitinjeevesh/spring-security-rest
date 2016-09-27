@@ -22,4 +22,12 @@ public class RoleUrlMapping {
     public void setUrls(List<String> urls) {
         this.urls = urls;
     }
+
+    @Override
+    public String toString() {
+        return "RoleUrlMapping{" +
+                "role='" + role + '\'' +
+                ", urls=" + urls +
+                '}';
+    }
 }

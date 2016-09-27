@@ -29,15 +29,15 @@ public class RoleUrlMappingDAOImpl implements RoleUrlMappingDAO {
         }});
 
         RoleUrlMapping isAuthAnonymously = new RoleUrlMapping();
-        adminRoleUrlMapping.setRole("IS_AUTHENTICATED_ANONYMOUSLY");
-        adminRoleUrlMapping.setUrls(new ArrayList<String>() {{
+        isAuthAnonymously.setRole("IS_AUTHENTICATED_ANONYMOUSLY");
+        isAuthAnonymously.setUrls(new ArrayList<String>() {{
             add("/api/admin");
             add("/api/open");
         }});
 
         RoleUrlMapping isAuthFully = new RoleUrlMapping();
-        adminRoleUrlMapping.setRole("IS_FULLY_AUTHENTICATED");
-        adminRoleUrlMapping.setUrls(new ArrayList<String>() {{
+        isAuthFully.setRole("IS_FULLY_AUTHENTICATED");
+        isAuthFully.setUrls(new ArrayList<String>() {{
             add("/api/all");
         }});
 

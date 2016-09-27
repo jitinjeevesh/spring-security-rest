@@ -20,7 +20,9 @@ public class RESTCsrfRequestMatcher implements RequestMatcher {
     public boolean matches(HttpServletRequest request) {
         if (!restSecurityConfig.getExcludeCSRFUrl().isEmpty()) {
             for (String s : restSecurityConfig.getExcludeCSRFUrl()) {
-                return request.getRequestURI().equalsIgnoreCase(s);
+                if (request.getRequestURI().equalsIgnoreCase(s)) {
+                    return false;
+                }
             }
         }
         return !request.getRequestURI().equalsIgnoreCase(restSecurityConfig.getLoginUrl());

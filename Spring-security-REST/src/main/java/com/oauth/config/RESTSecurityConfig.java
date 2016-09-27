@@ -28,11 +28,13 @@ public class RESTSecurityConfig {
     @Value("${spring.security.rest.login.url:/login}")
     private String loginUrl;
 
+    @Value("${spring.security.rest.logout.url:/logout}")
+    private String logoutUrl;
+
     @Value("${spring.security.rest.logout.session:false}")
     private boolean logoutFromSession;
 
-    //    @Value("#{'${spring.security.rest.csrf.exclude.urls}'.split(',')}")
-    @Value("${spring.security.rest.csrf.exclude.urls:}")
+    @Value("#{'${spring.security.rest.csrf.exclude.urls:}'.split(',')}")
     private List<String> excludeCSRFUrl;
 
     public boolean isCsrfInable() {
@@ -77,6 +79,14 @@ public class RESTSecurityConfig {
 
     public String getLoginUrl() {
         return loginUrl;
+    }
+
+    public String getLogoutUrl() {
+        return logoutUrl;
+    }
+
+    public void setLogoutUrl(String logoutUrl) {
+        this.logoutUrl = logoutUrl;
     }
 
     public void setLoginUrl(String loginUrl) {

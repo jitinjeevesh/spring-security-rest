@@ -76,7 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.userDetailsService(restSecurityUserDetailsService);
         builder.authenticationProvider(authenticationProvider());
-//        builder.authenticationProvider(preauthAuthProvider());
     }
 
     @Bean
@@ -113,9 +112,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/**").authenticated();
         http.addFilterBefore(customUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
-        http.formLogin().loginProcessingUrl("/login").successHandler(restAuthenticationSuccessHandler).permitAll();
+        http.formLogin().loginProcessingUrl(restSecurityConfig.getLoginUrl()).successHandler(restAuthenticationSuccessHandler).permitAll();
         http.formLogin().failureHandler(restAuthenticationFailureHandler);
-        http.logout().logoutUrl("/logout").addLogoutHandler(restLogoutCustomHandler).logoutSuccessHandler(restLogoutSuccessHandler);
+        http.logout().logoutUrl(restSecurityConfig.getLogoutUrl()).addLogoutHandler(restLogoutCustomHandler).logoutSuccessHandler(restLogoutSuccessHandler);
 //        logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
         // CSRF tokens handling
         if (restSecurityConfig.isCsrfInable()) {

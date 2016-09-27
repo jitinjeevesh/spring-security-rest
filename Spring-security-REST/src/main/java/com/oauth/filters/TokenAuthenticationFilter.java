@@ -94,9 +94,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         List<RoleUrlMapping> roleUrlMappings = roleUrlMappingDAO.fetchRoleUrlMapping();
         if (!roleUrlMappings.isEmpty()) {
             for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
-                System.out.println(roleUrlMapping.getRole());
                 if (roleUrlMapping.getRole().equalsIgnoreCase(restSecurityConfig.getPermitAll())) {
-                    System.out.println("....Fully role.....");
                     return roleUrlMapping.getUrls().contains(uri);
                 }
             }
@@ -155,12 +153,17 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     private boolean isURIAuthenticate(User user, String uri) {
         List<RoleUrlMapping> roleUrlMappings = roleUrlMappingDAO.fetchRoleUrlMapping();
-        if (!roleUrlMappings.isEmpty()) {
-            for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
-                if (roleUrlMapping.getRole().equalsIgnoreCase(user.getUserRole().getRole())) {
-                    return roleUrlMapping.getUrls().contains(uri);
+        try {
+            if (!roleUrlMappings.isEmpty()) {
+                for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
+                    System.out.println(roleUrlMapping);
+                    if (roleUrlMapping.getRole().equalsIgnoreCase(user.getUserRole().getRole())) {
+                        return roleUrlMapping.getUrls().contains(uri);
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "URL not authenticated"));
         }
         return false;
     }

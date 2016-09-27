@@ -27,9 +27,6 @@ public class CsrfTokenResponseHeaderBindingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Inside Csrf Token Response Header Binding Filter");
-        System.out.println("..............................CSRF Filter..............................................");
-        System.out.println(request.getMethod());
-        System.out.println(request.getRequestURI());
         CsrfToken token = (CsrfToken) request.getAttribute(REQUEST_ATTRIBUTE_NAME);
         if (token != null) {
             log.info("CSRF token value : ", token.getToken());
