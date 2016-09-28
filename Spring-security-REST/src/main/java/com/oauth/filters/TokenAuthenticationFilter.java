@@ -64,8 +64,10 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 //            SecurityContextHolder.clearContext();
 //            return;
 //        }
-
-        if (token != null) {
+        if (grantAuthentication(req, res)) {
+            log.info("This is a permit all authentication request");
+//            chain.doFilter(request, response);
+        } else if (token != null) {
             Authentication authResult;
             try {
                 authResult = attemptAuthentication(request, response);
@@ -90,12 +92,11 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         chain.doFilter(request, response);
     }
 
-    private boolean grantFullyRole(String uri) {
-        List<RoleUrlMapping> roleUrlMappings = roleUrlMappingDAO.fetchRoleUrlMapping();
-        if (!roleUrlMappings.isEmpty()) {
-            for (RoleUrlMapping roleUrlMapping : roleUrlMappings) {
-                if (roleUrlMapping.getRole().equalsIgnoreCase(restSecurityConfig.getPermitAll())) {
-                    return roleUrlMapping.getUrls().contains(uri);
+    private boolean grantAuthentication(ServletRequest req, ServletResponse res) {
+        if (!restSecurityConfig.getExcludeAuthenticationUrls().isEmpty()) {
+            for (String url : restSecurityConfig.getExcludeAuthenticationUrls()) {
+                if (((HttpServletRequest) req).getRequestURI().equalsIgnoreCase(url)) {
+                    return true;
                 }
             }
         }
