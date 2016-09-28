@@ -55,6 +55,8 @@ dependencies {
     compile project(':Spring-security-REST')
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.25'
     compile group: 'org.hibernate', name: 'hibernate-core', version: '4.2.2.Final'
+    compile group: 'org.springframework', name: 'spring-orm', version: '4.0.0.RELEASE'
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.10'
 //    compile("org.springframework.boot:spring-boot-starter-data-jpa")
 //    compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter")
