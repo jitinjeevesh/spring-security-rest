@@ -29,7 +29,7 @@ public class CsrfTokenResponseHeaderBindingFilter extends OncePerRequestFilter {
         log.info("Inside Csrf Token Response Header Binding Filter");
         CsrfToken token = (CsrfToken) request.getAttribute(REQUEST_ATTRIBUTE_NAME);
         if (token != null) {
-            log.info("CSRF token value : ", token.getToken());
+            log.info("CSRF token value : " + token.getToken());
             response.setHeader(RESPONSE_HEADER_NAME, token.getHeaderName());
             response.setHeader(RESPONSE_PARAM_NAME, token.getParameterName());
             response.setHeader(RESPONSE_TOKEN_NAME, token.getToken());
