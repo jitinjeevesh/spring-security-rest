@@ -15,6 +15,8 @@ import sample.service.UserProfileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 
 // TODO: Auto-generated Javadoc
@@ -116,6 +118,14 @@ public class UserProfileController {
     @ResponseBody
     public void all(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("all");
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Map register(@RequestBody final HashMap request) {
+        System.out.println("inside registration");
+        return userProfileService.register(String.valueOf(request.get("username")), String.valueOf(request.get("password")));
     }
 
 

@@ -4,6 +4,7 @@ import sample.model.UserProfile;
 import sample.model.UserSession;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 
 // TODO: Auto-generated Javadoc
@@ -39,5 +40,7 @@ public interface UserProfileService {
     public String validateSecretKey(String string);
 
     UserProfile fetchUser(String username);
+
+    Map register(String username, String password);
 
 }

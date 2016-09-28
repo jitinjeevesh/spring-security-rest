@@ -7,6 +7,8 @@ import com.oauth.data.UserRole;
 import com.oauth.exception.AuthenticationException;
 import com.oauth.exception.BusinessException;
 import com.oauth.exception.ErrorCodes;
+import com.oauth.service.RESTSecurityUserDetails;
+import com.oauth.service.RESTSpringSecurityService;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -59,6 +61,8 @@ public class UserProfileServiceImpl implements UserProfileService {
      */
     @Autowired
     public UserProfileDAO userProfileDAO;
+    @Autowired
+    private RESTSpringSecurityService restSpringSecurityService;
 
     /**
      * The iss.
@@ -151,6 +155,30 @@ public class UserProfileServiceImpl implements UserProfileService {
         logger.info("Exiting in UserProfileDAOImpl getLogin method");
         return null;
     }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @Transactional
+    public Map register(String username, String password) {
+        sample.model.UserRole userRole = (sample.model.UserRole) getCurrentSession().get(sample.model.UserRole.class, 1);
+        UserProfile userProfile = new UserProfile();
+        userProfile.setFirstName(username);
+        userProfile.setLastName(username);
+        userProfile.setUserMail(username);
+        userProfile.setPassword(restSpringSecurityService.encodePassword(password));
+        userProfile.setPhone("8586825188");
+        userProfile.setUserRole(userRole);
+        getCurrentSession().save(userProfile);
+        final RESTSecurityUserDetails restSecurityUserDetails = restSpringSecurityService.authenticate(userProfile.getUserMail(), userProfile.getPassword());
+        System.out.println("..................................Access token..........................................................");
+        System.out.println(restSecurityUserDetails.getAccessToken());
+        return new HashMap<String, Object>() {{
+            put("username", restSecurityUserDetails.getUsername());
+            put("accessToken", restSecurityUserDetails.getAccessToken().getToken());
+        }};
+    }
+
 
     //
 
