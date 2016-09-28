@@ -9,6 +9,7 @@ import com.oauth.filters.CustomUsernamePasswordAuthenticationFilter;
 import com.oauth.filters.TokenAuthenticationFilter;
 import com.oauth.handler.*;
 import com.oauth.matcher.RESTCsrfRequestMatcher;
+import com.oauth.matcher.RESTGrantAuthenticationRequestMatcher;
 import com.oauth.service.RESTSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -25,17 +25,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * The Class SecurityConfig.
@@ -67,6 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordGeneratorFactory passwordGeneratorFactory;
     @Autowired
     private CryptoConfig cryptoConfig;
+    @Autowired
+    private RESTGrantAuthenticationRequestMatcher restGrantAuthenticationRequestMatcher;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -116,7 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests().antMatchers("/api/all").permitAll();
+        http.authorizeRequests().requestMatchers(restGrantAuthenticationRequestMatcher).permitAll();
         http.authorizeRequests().antMatchers("/**").authenticated();
         http.addFilterBefore(customUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
