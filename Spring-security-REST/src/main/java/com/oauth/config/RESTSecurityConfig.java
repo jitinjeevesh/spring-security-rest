@@ -37,6 +37,9 @@ public class RESTSecurityConfig {
     @Value("#{'${spring.security.rest.csrf.exclude.urls:}'.split(',')}")
     private List<String> excludeCSRFUrl;
 
+    @Value("#{'${spring.security.rest.authentication.exclude.urls:}'.split(',')}")
+    private List<String> excludeAuthenticationUrls;
+
     public boolean isCsrfInable() {
         return isCsrfInable;
     }
@@ -107,5 +110,13 @@ public class RESTSecurityConfig {
 
     public void setExcludeCSRFUrl(List<String> excludeCSRFUrl) {
         this.excludeCSRFUrl = excludeCSRFUrl;
+    }
+
+    public List<String> getExcludeAuthenticationUrls() {
+        return excludeAuthenticationUrls;
+    }
+
+    public void setExcludeAuthenticationUrls(List<String> excludeAuthenticationUrls) {
+        this.excludeAuthenticationUrls = excludeAuthenticationUrls;
     }
 }
