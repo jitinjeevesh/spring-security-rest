@@ -1,18 +1,10 @@
 package com.oauth.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class AuthenticationDetail {
 
-    @JsonProperty("username")
     private String username;
-
-    @JsonProperty("access_token")
     private String accessToken;
-
-    @JsonProperty("expires_in")
     private Long expiresIn;
-
 
     public AuthenticationDetail() {
     }
@@ -21,6 +13,14 @@ public class AuthenticationDetail {
         this.accessToken = accessToken;
         this.username = username;
         this.expiresIn = expiresIn;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getAccessToken() {
