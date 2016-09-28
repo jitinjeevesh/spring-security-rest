@@ -5,18 +5,13 @@ import com.oauth.authentication.generator.TokenGenerator;
 import com.oauth.authentication.generator.TokenGeneratorFactory;
 import com.oauth.crypto.CryptoConfig;
 import com.oauth.crypto.PasswordGeneratorFactory;
-import com.oauth.dao.AuthenticationTokenDAO;
-import com.oauth.dao.UserDetailDAO;
 import com.oauth.data.AuthenticationToken;
-import com.oauth.data.RoleUrlMapping;
-import org.neo4j.cypher.internal.compiler.v2_1.functions.Str;
+import com.oauth.security.NoOpAuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * <p/>
@@ -36,6 +31,10 @@ public class RESTSpringSecurityService {
     private PasswordGeneratorFactory passwordGeneratorFactory;
     @Autowired
     private CryptoConfig cryptoConfig;
+    @Autowired
+    private RESTSecurityUserDetailsService restSecurityUserDetailsService;
+    @Autowired
+    private NoOpAuthenticationManager noOpAuthenticationManager;
 
     /**
      * This method is used to save token with the pre defined strategies for token generation.
@@ -66,5 +65,15 @@ public class RESTSpringSecurityService {
     public String encodePassword(String password) {
         PasswordEncoder passwordEncoder = passwordGeneratorFactory.apply(cryptoConfig.getAlgorithm());
         return passwordEncoder.encode(password);
+    }
+
+    public RESTSecurityUserDetails authenticate(String username, String password) {
+        RESTSecurityUserDetails restSecurityUserDetails = (RESTSecurityUserDetails) restSecurityUserDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(restSecurityUserDetails, password, restSecurityUserDetails.getAuthorities());
+        noOpAuthenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        if (usernamePasswordAuthenticationToken.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        }
+        return restSecurityUserDetails;
     }
 }
